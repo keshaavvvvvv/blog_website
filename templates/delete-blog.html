@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Blog</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple-v1.css">
+</head>
+<body>
+    <h1>Delete a Blog</h1>
+    <form method="post" action="/delete-blog">
+        <label for="blog_id">Blog_id:</label><br>
+        <input type="number" name="blog_id" required><br><br>
+
+        <input type="submit" value="Delete Blog">
+    </form>
+
+    <br>
+    <a href="/"><button>Back to Home</button></a>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Blog</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple-v1.css">
+</head>
+<body>
+    <h1>Create a New Blog</h1>
+    <form method="post" action="/create-blog">
+        <label for="title">Title:</label><br>
+        <input type="text" name="title" required><br><br>
+
+        <label for="body">Body:</label><br>
+        <textarea name="body" rows="5" cols="30" required></textarea><br><br>
+
+        <input type="submit" value="Create Blog">
+    </form>
+
+    <br>
+    <a href="/"><button>Back to Home</button></a>
+</body>
+</html>

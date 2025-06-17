@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Blog Home</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple-v1.css">
+</head>
+<body>
+    <h1>ALL BLOGS</h1>
+    <a href="/create-blog">
+        <button>Create a New Blog</button>
+    </a>
+    <a href="/delete-blog">
+        <button>Delete a Blog</button>
+    </a>
+    <a href="/edit-blog-id">
+    <button>Edit a Blog</button>
+    </a>
+    <br>
+    {% if blogs %}
+      <ul>
+        {% for blog in blogs %}
+          <li>
+            <h2>{{ blog.title }}</h2>
+            <p>{{ blog.id }}</p>
+            <p>{{ blog.body }}</p>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No Blogs Found.</p>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!-- templates/edit-blog-id.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple-v1.css">
+    <title>Edit Blog</title>
+</head>
+<body>
+    <h1>Enter Blog ID to Edit</h1>
+    <form method="get" action="/edit-blog">
+        <label for="blog_id">Blog ID:</label><br>
+        <input type="number" name="blog_id" required><br><br>
+        <input type="submit" value="Edit Blog">
+    </form>
+    <br>
+    <a href="/"><button>Back to Home</button></a>
+</body>
+</html>

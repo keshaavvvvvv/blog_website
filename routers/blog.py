@@ -7,13 +7,13 @@ router = APIRouter(
     tags=["Blog Operations"]
 )
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.ShowBlog)
-def create_blog(request: schemas.UpBlog, db: Session = Depends(database.get_db)):
-    new_blog = models.Blog(title=request.title, body=request.body)
-    db.add(new_blog)
-    db.commit()
-    db.refresh(new_blog)
-    return new_blog
+# @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.ShowBlog)
+# def create_blog(request: schemas.UpBlog, db: Session = Depends(database.get_db)):
+#     new_blog = models.Blog(title=request.title, body=request.body)
+#     db.add(new_blog)
+#     db.commit()
+#     db.refresh(new_blog)
+#     return new_blog
 
 @router.get("/{blog_id}", response_model=schemas.ShowBlog)
 def get_blog(blog_id: int, db: Session = Depends(database.get_db)):
@@ -31,10 +31,4 @@ def update_blog(blog_id: int, request: schemas.UpBlog, db: Session = Depends(dat
     db.commit()
     return {"message": "Blog updated successfully"}
 
-@router.delete("/{blog_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_blog(blog_id: int, db: Session = Depends(database.get_db)):
-    blog = db.query(models.Blog).filter(models.Blog.id == blog_id)
-    if not blog.first():
-        raise HTTPException(status_code=404, detail="Blog not found")
-    blog.delete(synchronize_session=False)
-    db.commit()
+
