@@ -65,7 +65,7 @@ def delete_blog(request: Request, blog_id: int , db: Session = Depends(database.
 #     return templates.TemplateResponse("edit-blog-id.html", {"request": request})
 
 @app.get("/edit-blog/{blog_id}")
-def show_edit_form(request: Request, blog_id: int, db: Session = Depends(database.get_db)):
+async def show_edit_form(request: Request, blog_id: int, db: Session = Depends(database.get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == blog_id).first()
     if not blog:
         raise HTTPException(status_code=404, detail="Blog not found")
@@ -73,7 +73,7 @@ def show_edit_form(request: Request, blog_id: int, db: Session = Depends(databas
 
 
 @app.post("/edit-blog/{blog_id}")
-def update_blog(blog_id: int, title: str = Form(...), body: str = Form(...), db: Session = Depends(database.get_db)):
+async def update_blog(blog_id: int, title: str = Form(...), body: str = Form(...), db: Session = Depends(database.get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == blog_id).first()
     if not blog:
         raise HTTPException(status_code=404, detail="Blog not found")
@@ -82,6 +82,8 @@ def update_blog(blog_id: int, title: str = Form(...), body: str = Form(...), db:
     blog.body = body
     db.commit()
     return RedirectResponse(url="/", status_code=303)
+
+
 
 @app.get("/blog/{blog_id}")
 def show_blog_detail(blog_id :int ,request: Request,db: Session=Depends(database.get_db)):
