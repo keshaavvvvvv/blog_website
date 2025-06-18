@@ -1,0 +1,18 @@
+<!-- templates/blog-detail.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ blog.title }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple-v1.css">
+</head>
+<body>
+    <h1>{{ blog.title }}</h1>
+    <div>
+        {{ rendered_body | safe }}
+    </div>
+
+    <br>
+    <a href="/"><button>Back to Home</button></a>
+</body>
+</html>

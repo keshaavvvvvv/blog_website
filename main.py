@@ -5,8 +5,8 @@ from typing import List
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
-from routers import blog
 import models, database,schemas
+import markdown
 
 
 app = FastAPI()
@@ -14,11 +14,6 @@ app = FastAPI()
 models.database.Base.metadata.create_all(database.engine)
 app.mount("/static",StaticFiles(directory="static"),name="static")
 templates=Jinja2Templates(directory="templates")
-
-router = APIRouter(
-    prefix="/blogs",
-    tags=["Blog List"]
-)
 
 @app.get("/", response_model=List[schemas.Blog])
 def list_all_blogs(request : Request ,db: Session = Depends(database.get_db)):
@@ -47,15 +42,15 @@ def submit_blog_form(request: Request,title: str = Form(...),body: str = Form(..
     return RedirectResponse(url="/", status_code=303)
 
 # Register both routers
-app.include_router(blog.router)
 
 
-@app.get("/delete-blog")
-def delete_blog_form(request: Request):
-    return templates.TemplateResponse("delete-blog.html", {"request": request})
 
-@app.post("/delete-blog")
-def delete_blog(request: Request, blog_id: int = Form(...), db: Session = Depends(database.get_db)):
+# @app.get("/delete-blog")
+# def delete_blog_form(request: Request):
+#     return templates.TemplateResponse("delete-blog.html", {"request": request})
+
+@app.post("/delete-blog/{blog_id}")
+def delete_blog(request: Request, blog_id: int , db: Session = Depends(database.get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == blog_id)
     if not blog.first():
         raise HTTPException(status_code=404, detail="Blog not found")
@@ -65,11 +60,11 @@ def delete_blog(request: Request, blog_id: int = Form(...), db: Session = Depend
 
 
 
-@app.get("/edit-blog-id")
-def get_blog_id_input(request: Request):
-    return templates.TemplateResponse("edit-blog-id.html", {"request": request})
+# @app.get("/edit-blog-id")
+# def get_blog_id_input(request: Request):
+#     return templates.TemplateResponse("edit-blog-id.html", {"request": request})
 
-@app.get("/edit-blog")
+@app.get("/edit-blog/{blog_id}")
 def show_edit_form(request: Request, blog_id: int, db: Session = Depends(database.get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == blog_id).first()
     if not blog:
@@ -87,3 +82,11 @@ def update_blog(blog_id: int, title: str = Form(...), body: str = Form(...), db:
     blog.body = body
     db.commit()
     return RedirectResponse(url="/", status_code=303)
+
+@app.get("/blog/{blog_id}")
+def show_blog_detail(blog_id :int ,request: Request,db: Session=Depends(database.get_db)):
+    blog=db.query(models.Blog).filter(models.Blog.id == blog_id).first()
+    if not blog:
+        raise HTTPException(status_code=404, detail="blog not found")
+    rendered_body=markdown.markdown(blog.body)
+    return templates.TemplateResponse("blog-detail.html",{"request": request,"blog":blog,"rendered_body": rendered_body})

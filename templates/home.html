@@ -10,9 +10,6 @@
     <a href="/create-blog">
         <button>Create a New Blog</button>
     </a>
-    <a href="/delete-blog">
-        <button>Delete a Blog</button>
-    </a>
     <a href="/edit-blog-id">
     <button>Edit a Blog</button>
     </a>
@@ -21,9 +18,15 @@
       <ul>
         {% for blog in blogs %}
           <li>
-            <h2>{{ blog.title }}</h2>
-            <p>{{ blog.id }}</p>
-            <p>{{ blog.body }}</p>
+            <a href="/blog/{{ blog.id }}">
+              <strong>{{ blog.title }}</strong> (ID: {{ blog.id }})
+            </a>
+            <form method="post" action="/delete-blog/{{ blog.id }}">
+              <input type="submit" value="Delete Blog">
+            </form>
+            <form method="get" action="/edit-blog/{{ blog.id }}">
+              <input type="submit" value="Edit Blog">
+            </form>
           </li>
         {% endfor %}
       </ul>
