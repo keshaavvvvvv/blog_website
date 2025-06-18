@@ -7,12 +7,15 @@
 </head>
 <body>
     <h1>Edit Blog</h1>
-    <form method="post" action="/edit-blog/{{ blog.id }}">
+    <form method="post" action="/edit-blog/{{ blog.id }}" enctype="multipart/form-data">
         <label for="title">Title:</label><br>
         <input type="text" name="title" value="{{ blog.title }}" required><br><br>
 
         <label for="body">Body:</label><br>
         <textarea name="body" rows="10" cols="60" required>{{ blog.body }}</textarea><br><br>
+
+        <label for="image">Upload Image:</label><br>
+        <input type="file" name="image" accept="image/*" required><br><br>
 
         <input type="submit" value="Update Blog">
     </form>

@@ -10,9 +10,6 @@
     <a href="/create-blog">
         <button>Create a New Blog</button>
     </a>
-    <a href="/edit-blog-id">
-    <button>Edit a Blog</button>
-    </a>
     <br>
     {% if blogs %}
       <ul>
@@ -27,6 +24,9 @@
             <form method="get" action="/edit-blog/{{ blog.id }}">
               <input type="submit" value="Edit Blog">
             </form>
+            {% if blog.image_filename %}
+               <img src="/static/uploads/{{ blog.image_filename }}", alt="Blog Image", style="width: 405px; height: 240px; object-fit: cover; border-radius: 8px; margin-top: 8px;">
+            {% endif %}
           </li>
         {% endfor %}
       </ul>

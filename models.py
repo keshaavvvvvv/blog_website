@@ -7,6 +7,7 @@ class Blog(database.Base):
   id=Column(Integer,primary_key=True,index=True,autoincrement=True)
   title=Column(String)
   body= Column(String)
+  image_filename = Column(String, nullable=True)
   #user_id=Column(Integer,ForeignKey('users.id'))
   #creator=relationship("User",back_populates="blogs")
 # class User(database.Base):

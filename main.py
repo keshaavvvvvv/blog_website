@@ -1,4 +1,4 @@
-from fastapi import FastAPI,Request,Form,HTTPException
+from fastapi import FastAPI,Request,Form,HTTPException,File,UploadFile
 from fastapi import APIRouter, Depends ,FastAPI,Request
 from sqlalchemy.orm import Session
 from typing import List
@@ -7,9 +7,13 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 import models, database,schemas
 import markdown
+import shutil
+import os,glob
+
 
 
 app = FastAPI()
+
 
 models.database.Base.metadata.create_all(database.engine)
 app.mount("/static",StaticFiles(directory="static"),name="static")
@@ -33,21 +37,24 @@ def show_create_blog_form(request: Request):
 
 
 @app.post("/create-blog")
-def submit_blog_form(request: Request,title: str = Form(...),body: str = Form(...),db: Session = Depends(database.get_db)):
-    new_blog = models.Blog(title=title, body=body)
+def submit_blog_form(request: Request,title: str = Form(...),body: str = Form(...),image:UploadFile = File(None),db: Session = Depends(database.get_db)):
+    new_blog = models.Blog(title=title, body=body,image_filename="")
     db.add(new_blog)
     db.commit()
     db.refresh(new_blog)
+    filename_parts=os.path.splitext(image.filename)
+    extension =filename_parts[1]
+    image_file=f"blog_{new_blog.id}{extension}"
+    image_filename=f"static/uploads/{image_file}"
+    with open(image_filename, "wb") as buffer:
+        shutil.copyfileobj(image.file, buffer)
+    new_blog.image_filename = image_file
+    db.commit()
 
     return RedirectResponse(url="/", status_code=303)
 
-# Register both routers
 
 
-
-# @app.get("/delete-blog")
-# def delete_blog_form(request: Request):
-#     return templates.TemplateResponse("delete-blog.html", {"request": request})
 
 @app.post("/delete-blog/{blog_id}")
 def delete_blog(request: Request, blog_id: int , db: Session = Depends(database.get_db)):
@@ -55,14 +62,14 @@ def delete_blog(request: Request, blog_id: int , db: Session = Depends(database.
     if not blog.first():
         raise HTTPException(status_code=404, detail="Blog not found")
     blog.delete(synchronize_session=False)
+    pattern = f"static/uploads/blog_{blog_id}.*"
+    matches = glob.glob(pattern)
+    os.remove(matches[0])
     db.commit()
     return RedirectResponse(url="/", status_code=303)
 
 
 
-# @app.get("/edit-blog-id")
-# def get_blog_id_input(request: Request):
-#     return templates.TemplateResponse("edit-blog-id.html", {"request": request})
 
 @app.get("/edit-blog/{blog_id}")
 async def show_edit_form(request: Request, blog_id: int, db: Session = Depends(database.get_db)):
@@ -73,13 +80,26 @@ async def show_edit_form(request: Request, blog_id: int, db: Session = Depends(d
 
 
 @app.post("/edit-blog/{blog_id}")
-async def update_blog(blog_id: int, title: str = Form(...), body: str = Form(...), db: Session = Depends(database.get_db)):
+async def update_blog(blog_id: int, title: str = Form(...), body: str = Form(...),image:UploadFile = File(None), db: Session = Depends(database.get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == blog_id).first()
     if not blog:
         raise HTTPException(status_code=404, detail="Blog not found")
-
     blog.title = title
     blog.body = body
+    if image is not None:
+        pattern = f"static/uploads/blog_{blog_id}.*"
+        matches = glob.glob(pattern)
+        os.remove(matches[0])
+        filename_parts = os.path.splitext(image.filename)
+        extension = filename_parts[1]
+        image_file = f"blog_{blog.id}{extension}"
+        image_filename = f"static/uploads/{image_file}"
+
+        with open(image_filename, "wb") as buffer:
+            shutil.copyfileobj(image.file, buffer)
+
+        blog.image_filename = image_file
+
     db.commit()
     return RedirectResponse(url="/", status_code=303)
 
