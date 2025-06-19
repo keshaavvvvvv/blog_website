@@ -12,7 +12,7 @@ templates = Jinja2Templates(directory="templates")
 
 
 @blogs_router.get("/", response_model=List[schemas.Blog])
-def list_all_blogs(request : Request ,db: Session = Depends(database.get_db)):
+def list_all_blogs(request: Request, db: Session = Depends(database.get_db)):
     blogs = db.query(models.Blog).all()
 
     return templates.TemplateResponse("home.html", {"request": request, "blogs": blogs})
